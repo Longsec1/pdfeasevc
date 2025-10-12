@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- 🧭 Basic SEO -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDFEase - Free PDF Tools | Compress, Merge, Split & Convert</title>
+  <meta name="description" content="Free, secure, and easy-to-use PDF tools. Compress, merge, split, and convert images to PDF — all in your browser with no uploads.">
+  <meta name="keywords" content="PDFEase, free PDF tools, compress PDF, merge PDF, split PDF, convert image to PDF, online PDF compressor, Patricode Solutions">
+  <meta property="og:title" content="PDFEase - Free Online PDF Tools">
+  <meta property="og:description" content="Use PDFEase to compress, merge, split, and convert PDFs online — 100% free and private.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pdfease.vercel.app">
+  <meta property="og:image" content="https://pdfease.vercel.app/preview.png">
+
+  <!-- Fonts & Library -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+  <!-- 🧩 Styles -->
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :root {
+      --bg: #f6f8fb;
+      --text: #333;
+      --card-bg: #fff;
+      --accent: #004aad;
+      --button: #00a86b;
+    }
+
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #eee;
+      --card-bg: #1f1f1f;
+      --accent: #007bff;
+      --button: #22c55e;
+    }
+
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .toggle-theme {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: transparent;
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .tool-box {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 450px;
+      margin-bottom: 25px;
+      transition: transform 0.2s;
+    }
+
+    .tool-box:hover { transform: translateY(-3px); }
+
+    label {
+      display: block;
+      background: var(--accent);
+      color: white;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    input[type="file"] { display: none; }
+
+    button {
+      background: var(--button);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    button:hover:not(:disabled) { filter: brightness(1.1); }
+
+    a.download-link {
+      display: block;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+
+    .status { margin-top: 15px; font-size: 0.9rem; color: var(--text); }
+    .tool-title { font-weight: 600; margin-bottom: 10px; }
+
+    input.page-range {
+      width: 80%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      padding: 10px;
+      background: var(--card-bg);
+      text-align: center;
+      font-size: 0.9rem;
+      border-top: 1px solid #ddd;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6rem; }
+      .tool-box { padding: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <button class="toggle-theme" id="themeToggle">🌙</button>
+    <h1>PDFEase</h1>
+    <p>Free Online PDF Tools — Compress, Merge, Split & Convert</p>
+  </header>
+
+  <main>
+    <!-- Compress PDF -->
+    <div class="tool-box" id="compress-pdf">
+      <div class="tool-title">🔽 Compress PDF</div>
+      <label for="compressInput">Choose PDF File</label>
+      <input type="file" id="compressInput" accept="application/pdf" />
+      <button id="compressBtn" disabled>Compress PDF</button>
+      <a id="downloadCompressed" class="download-link" style="display:none;" download="compressed.pdf">Download Compressed PDF</a>
+      <div class="status" id="compressStatus"></div>
+    </div>
+
+    <!-- Merge PDFs -->
+    <div class="tool-box" id="merge-pdf">
+      <div class="tool-title">📎 Merge PDFs</div>
+      <label for="mergeInput">Select Multiple PDFs</label>
+      <input type="file" id="mergeInput" accept="application/pdf" multiple />
+      <button id="mergeBtn" disabled>Merge PDFs</button>
+      <a id="downloadMerged" class="download-link" style="display:none;" download="merged.pdf">Download Merged PDF</a>
+      <div class="status" id="mergeStatus"></div>
+    </div>
+
+    <!-- Split PDF -->
+    <div class="tool-box" id="split-pdf">
+      <div class="tool-title">✂️ Split PDF</div>
+      <label for="splitInput">Choose PDF File</label>
+      <input type="file" id="splitInput" accept="application/pdf" />
+      <input type="text" id="pageRange" class="page-range" placeholder="Enter page range e.g. 1-3" />
+      <button id="splitBtn" disabled>Split PDF</button>
+      <a id="downloadSplit" class="download-link" style="display:none;" download="split.pdf">Download Split PDF</a>
+      <div class="status" id="splitStatus"></div>
+    </div>
+
+    <!-- Convert Images to PDF -->
+    <div class="tool-box" id="convert-image">
+      <div class="tool-title">🖼️ Convert Images to PDF</div>
+      <label for="imgInput">Select Images</label>
+      <input type="file" id="imgInput" accept="image/*" multiple />
+      <button id="imgToPdfBtn" disabled>Convert to PDF</button>
+      <a id="downloadImgPdf" class="download-link" style="display:none;" download="images.pdf">Download PDF</a>
+      <div class="status" id="imgStatus"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Made with ❤️ by <strong>Patricode Solutions</strong> | <a href="#">Support PDFEase</a></p>
+  </footer>
+
+  <!-- 🧠 JS Functionality -->
+  <script>
+    // Theme Toggle 🌙
+    const themeToggle = document.getElementById("themeToggle");
+    const body = document.body;
+
+    // Load theme from localStorage
+    if (localStorage.getItem("theme") === "dark") {
+      body.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "☀️";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      const dark = body.getAttribute("data-theme") === "dark";
+      if (dark) {
+        body.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙";
+      } else {
+        body.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀️";
+      }
+    });
+
+    // Reuse all logic from previous version
+    const qs = (id) => document.getElementById(id);
+
+    // =============== COMPRESS PDF ===============
+    qs("compressInput").addEventListener("change", () => qs("compressBtn").disabled = !qs("compressInput").files.length);
+    qs("compressBtn").addEventListener("click", async () => {
+      const file = qs("compressInput").files[0];
+      if (!file) return;
+      qs("compressStatus").textContent = "Compressing...";
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+      const newPdf = await PDFLib.PDFDocument.create();
+      const pages = await newPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+      pages.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save({ useObjectStreams: true });
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      qs("downloadCompressed").href = URL.createObjectURL(blob);
+      qs("downloadCompressed").style.display = "inline-block";
+      qs("compressStatus").textContent = "Done ✅";
+    });
+
+    // =============== MERGE PDF ===============
+    qs("mergeInput").addEventListener("change", () => qs("mergeBtn").disabled = !qs("mergeInput").files.length);
+    qs("mergeBtn").addEventListener("click", async () => {
+      const files = Array.from(qs("mergeInput").files);
+      if (files.length < 2) { qs("mergeStatus").textContent = "Select 2 or more PDFs"; return; }
+      qs("mergeStatus").textContent = "Merging...";
+      const merged = await PDFLib.PDFDocument.create();
+      for (const file of files) {
+        const buf = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(buf);
+        const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => merged.addPage(p));
+      }
+      const bytes = await merged.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      qs("downloadMerged").href = URL.createObjectURL(blob);
+      qs("downloadMerged").style.display = "inline-block";
+      qs("mergeStatus").textContent = "Merge complete ✅";
+    });
+
+    // =============== SPLIT PDF ===============
+    qs("splitInput").addEventListener("change", () => qs("splitBtn").disabled = !qs("splitInput").files.length);
+    qs("splitBtn").addEventListener("click", async () => {
+      const file = qs("splitInput").files[0];
+      const range = qs("pageRange").value.trim();
+      if (!file || !range) return;
+      const [start, end] = range.split("-").map(n => parseInt(n));
+      qs("splitStatus").textContent = "Splitting...";
+      const buffer = await file.arrayBuffer();
+      const pdf = await PDFLib.PDFDocument.load(buffer);
+      const newPdf = await PDFLib.PDFDocument.create();
+      const pages = [];
+      for (let i = start - 1; i < end && i < pdf.getPageCount(); i++) pages.push(i);
+      const copied = await newPdf.copyPages(pdf, pages);
+      copied.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      qs("downloadSplit").href = URL.createObjectURL(blob);
+      qs("downloadSplit").style.display = "inline-block";
+      qs("splitStatus").textContent = "Split complete ✅";
+    });
+
+    // =============== IMAGES TO PDF ===============
+    qs("imgInput").addEventListener("change", () => qs("imgToPdfBtn").disabled = !qs("imgInput").files.length);
+    qs("imgToPdfBtn").addEventListener("click", async () => {
+      const files = Array.from(qs("imgInput").files);
+      if (!files.length) return;
+      qs("imgStatus").textContent = "Converting...";
+      const pdf = await PDFLib.PDFDocument.create();
+      for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        const img = file.type === "image/jpeg" ? await pdf.embedJpg(bytes) : await pdf.embedPng(bytes);
+        const { width, height } = img.scale(0.5);
+        const page = pdf.addPage([width, height]);
+        page.drawImage(img, { x: 0, y: 0, width, height });
+      }
+      const pdfBytes = await pdf.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      qs("downloadImgPdf").href = URL.createObjectURL(blob);
+      qs("downloadImgPdf").style.display = "inline-block";
+      qs("imgStatus").textContent = "Done ✅";
+    });
+  </script>
+</body>
+</html>
