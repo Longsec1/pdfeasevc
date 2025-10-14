@@ -20,7 +20,6 @@
   <!-- 🧩 Styles -->
   <style>
     * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
-
     body {
       margin: 0;
       background: var(--bg);
@@ -29,7 +28,6 @@
       display: flex;
       flex-direction: column;
     }
-
     :root {
       --bg: #f6f8fb;
       --text: #333;
@@ -37,7 +35,6 @@
       --accent: #004aad;
       --button: #00a86b;
     }
-
     [data-theme="dark"] {
       --bg: #121212;
       --text: #eee;
@@ -45,7 +42,6 @@
       --accent: #007bff;
       --button: #22c55e;
     }
-
     header {
       background: var(--accent);
       color: white;
@@ -55,7 +51,6 @@
       align-items: center;
       position: relative;
     }
-
     .toggle-theme {
       position: absolute;
       top: 15px;
@@ -69,7 +64,6 @@
       cursor: pointer;
       font-size: 1rem;
     }
-
     main {
       flex: 1;
       display: flex;
@@ -77,7 +71,6 @@
       align-items: center;
       padding: 20px;
     }
-
     .tool-box {
       background: var(--card-bg);
       border-radius: 10px;
@@ -88,9 +81,7 @@
       margin-bottom: 25px;
       transition: transform 0.2s;
     }
-
     .tool-box:hover { transform: translateY(-3px); }
-
     label {
       display: block;
       background: var(--accent);
@@ -100,9 +91,7 @@
       cursor: pointer;
       margin-bottom: 15px;
     }
-
     input[type="file"] { display: none; }
-
     button {
       background: var(--button);
       color: white;
@@ -113,10 +102,8 @@
       transition: background 0.3s;
       margin-top: 10px;
     }
-
     button:disabled { background: #ccc; cursor: not-allowed; }
     button:hover:not(:disabled) { filter: brightness(1.1); }
-
     a.download-link {
       display: block;
       background: var(--accent);
@@ -126,10 +113,8 @@
       border-radius: 5px;
       margin-top: 15px;
     }
-
     .status { margin-top: 15px; font-size: 0.9rem; color: var(--text); }
     .tool-title { font-weight: 600; margin-bottom: 10px; }
-
     input.page-range {
       width: 80%;
       padding: 8px;
@@ -137,7 +122,6 @@
       border-radius: 5px;
       margin-bottom: 10px;
     }
-
     footer {
       padding: 10px;
       background: var(--card-bg);
@@ -145,10 +129,8 @@
       font-size: 0.9rem;
       border-top: 1px solid #ddd;
     }
-
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
-
     @media (max-width: 600px) {
       h1 { font-size: 1.6rem; }
       .tool-box { padding: 20px; }
@@ -216,7 +198,6 @@
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
 
-    // Load theme from localStorage
     if (localStorage.getItem("theme") === "dark") {
       body.setAttribute("data-theme", "dark");
       themeToggle.textContent = "☀️";
@@ -235,10 +216,9 @@
       }
     });
 
-    // Reuse all logic from previous version
     const qs = (id) => document.getElementById(id);
 
-    // =============== COMPRESS PDF ===============
+    // Compress PDF
     qs("compressInput").addEventListener("change", () => qs("compressBtn").disabled = !qs("compressInput").files.length);
     qs("compressBtn").addEventListener("click", async () => {
       const file = qs("compressInput").files[0];
@@ -256,7 +236,7 @@
       qs("compressStatus").textContent = "Done ✅";
     });
 
-    // =============== MERGE PDF ===============
+    // Merge PDFs
     qs("mergeInput").addEventListener("change", () => qs("mergeBtn").disabled = !qs("mergeInput").files.length);
     qs("mergeBtn").addEventListener("click", async () => {
       const files = Array.from(qs("mergeInput").files);
@@ -276,7 +256,7 @@
       qs("mergeStatus").textContent = "Merge complete ✅";
     });
 
-    // =============== SPLIT PDF ===============
+    // Split PDF
     qs("splitInput").addEventListener("change", () => qs("splitBtn").disabled = !qs("splitInput").files.length);
     qs("splitBtn").addEventListener("click", async () => {
       const file = qs("splitInput").files[0];
@@ -298,7 +278,7 @@
       qs("splitStatus").textContent = "Split complete ✅";
     });
 
-    // =============== IMAGES TO PDF ===============
+    // Convert Images to PDF
     qs("imgInput").addEventListener("change", () => qs("imgToPdfBtn").disabled = !qs("imgInput").files.length);
     qs("imgToPdfBtn").addEventListener("click", async () => {
       const files = Array.from(qs("imgInput").files);
@@ -318,6 +298,13 @@
       qs("downloadImgPdf").style.display = "inline-block";
       qs("imgStatus").textContent = "Done ✅";
     });
+
+    // 🪙 Monetag Verification (Service Worker)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/monetag-sw.js')
+        .then(() => console.log('Monetag verification SW registered'))
+        .catch(err => console.log('Monetag SW registration failed:', err));
+    }
   </script>
 </body>
-</html>
+  </html>
