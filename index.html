@@ -13,6 +13,9 @@
   <meta property="og:url" content="https://pdfease.vercel.app">
   <meta property="og:image" content="https://pdfease.vercel.app/preview.png">
 
+  <!-- ✅ Monetag Verification -->
+  <meta name="monetag" content="765c62adc48cf7d48442cf07993313b6">
+
   <!-- Fonts & Library -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -298,13 +301,6 @@
       qs("downloadImgPdf").style.display = "inline-block";
       qs("imgStatus").textContent = "Done ✅";
     });
-
-    // 🪙 Monetag Verification (Service Worker)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/monetag-sw.js')
-        .then(() => console.log('Monetag verification SW registered'))
-        .catch(err => console.log('Monetag SW registration failed:', err));
-    }
   </script>
 </body>
-  </html>
+    </html>
