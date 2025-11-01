@@ -1,0 +1,20 @@
+# Allow all search engines to crawl the main content
+User-agent: *
+Disallow: /admin/
+Disallow: /scripts/
+Disallow: /temp/
+Disallow: /*.js$
+Disallow: /*.map$
+Disallow: /*.json$
+Disallow: /*.zip$
+
+# Allow crawling of CSS, images, and HTML files
+Allow: /*.css$
+Allow: /*.html$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.webp$
+
+# Link to sitemap
+Sitemap: https://pdfease.vercel.app/sitemap.xml
